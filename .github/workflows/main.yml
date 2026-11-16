@@ -17,19 +17,20 @@ jobs:
 
       # The Nexus header and a matching Dear ImGui come from an official Raidcore addon,
       # because Nexus shares its ImGui context with addons and the versions should match.
-      - name: Fetch Nexus.h and ImGui from an official Raidcore addon
+      - name: Fetch Nexus.h and ImGui from official Raidcore repos
         shell: bash
         run: |
-          git clone --depth 1 https://github.com/RaidcoreGG/MouseLookHandler deps
-          echo "Dependency commit (note this down if you want to pin it later):"
-          git -C deps rev-parse HEAD
+          mkdir -p deps/src
+          git clone --depth 1 https://github.com deps/src/nexus
+          git clone --depth 1 https://github.com deps/src/imgui
           for f in src/nexus/Nexus.h src/imgui/imgui.h src/imgui/imgui.cpp src/imgui/imgui_draw.cpp src/imgui/imgui_tables.cpp src/imgui/imgui_widgets.cpp; do
             if [ ! -f "deps/$f" ]; then
-              echo "::error::deps/$f is missing - the layout of the dependency repo changed. Paste this log into the chat."
+              echo "::error::deps/$f is missing - check the repository layout."
               exit 1
             fi
           done
           grep -n "NEXUS_API_VERSION" deps/src/nexus/Nexus.h | head -5 || true
+
 
       - name: Set up the MSVC compiler
         uses: ilammy/msvc-dev-cmd@v1
